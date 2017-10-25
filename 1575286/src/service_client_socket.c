@@ -51,7 +51,8 @@ fileToStr(char *file) {
 char * route(char * page) {
   if (*page == '\0') page = "index.html";
   
-  char * webpage = fileToStr(page), * website = malloc(1024);
+  char * webpage = fileToStr(page);
+  char * website = malloc(buffer_size);
   if (!webpage) {
     webpage = fileToStr("404.html");
   }
@@ -68,6 +69,7 @@ char * route(char * page) {
 int
 service_client_socket (const int s, const char *const tag) {
   char buffer[buffer_size];
+  bzero(buffer, buffer_size);
   size_t bytes;
 
   printf ("new connection from %s\n", tag);
@@ -75,12 +77,18 @@ service_client_socket (const int s, const char *const tag) {
   /* repeatedly read a buffer load of bytes, leaving room for the
      terminating NUL we want to add to make using printf() possible */
   
-  while ((bytes = read (s, buffer, buffer_size - 1)) > 0) {
+  while (1) {
+    if ((bytes = read (s, buffer, buffer_size - 1)) < 0) {
+      fprintf(stderr, "Failed to read\n");
+      return 1;
+    }
     /* this code is not quite complete: a write can in this context be
        partial and return 0<x<bytes.  realistically you don't need to
        deal with this case unless you are writing multiple megabytes */
     printf("Line70 BUFFER: %s", buffer);
-    char page[1024];
+    if (buffer[i])
+    char page[buffer_size];
+    bzero(page, buffer_size);
     int at, i;
     for (at = 0; at < buffer_size && buffer[at] != ' '; at++);
     for (i = 0, at += 2; at < buffer_size && buffer[at] != ' '; page[i++] = buffer[at++]); 
